@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biofilia Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#services">Services</a></li>
+                <li><a href="biofilia-test.html">Biofilia test</a></li> <!-- Link to new page -->
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="biofilia-test">
+            <h2>Biofilia Test</h2>
+            <p>Take the biofilia test to measure your connection with nature.</p>
+            <canvas id="myRadarChart"></canvas> <!-- raccoglie dati da google sheet-->
+            <!-- Add more content about the Biofilia test here -->
+        </section>
+    </main>
+
+    
+    <!-- Qui sotto google sheets-->
+    <script> 
+        document.addEventListener('DOMContentLoaded', function () {
+            const sheetId = '1PqdHWpWml3MaR9NlK30SEcCUw119WKlffOZbOgxyWR0';  // Sostituisci con il tuo ID reale del Google Sheet
+            const range = 'All pivoted responses!A3:B22';  // Qui vengono richiesti i dati voluti 
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=AIzaSyD00c-FiSFTOO1JC8h5kPsDuCnaYc4dFQI `;
+        
+            fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        const maxLength = 15;  // Numero massimo di caratteri
+        const labels = data.values.map(row => row[0].length > maxLength ? row[0].substring(0, maxLength) + '...' : row[0]);  // Etichette delle domande dalla colonna A
+        const responses = data.values.map(row => Number(row[1]));  // Risposte del primo utente dalla colonna B
+
+        // Crea il grafico
+        const ctx = document.getElementById('myRadarChart').getContext('2d');
+        const myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                
+                labels: labels,
+                datasets: [{
+                    label: 'Risposte Utente',
+                    data: responses,  // Dati di risposta
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(75, 192, 192, 1)'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 7,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        pointLabels: {
+    font: {
+        size: 8  // Riduce la dimensione del font delle etichette
+    }
+}
+                        
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Error loading the data: ', error));
+});
+</script>
+        
+        
+ 
+
+        
+</body>
+</html>
